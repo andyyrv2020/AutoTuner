@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
+#nullable disable
+
 namespace AutoTuner.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
@@ -15,9 +17,394 @@ namespace AutoTuner.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.0.0")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("ProductVersion", "9.0.10")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("AutoTuner.Models.Car", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Brand")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("DrivingStyle")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Drivetrain")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("EngineType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("HorsePower")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Model")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("Torque")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Weight")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Cars");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Brand = "Volkswagen",
+                            DrivingStyle = 0,
+                            Drivetrain = "FWD",
+                            EngineType = "2.0 TSI",
+                            HorsePower = 245,
+                            Model = "Golf GTI",
+                            Torque = 370,
+                            UserId = "b8c7553d-0b10-454f-8d1c-6cbf165168ff",
+                            Weight = 1440,
+                            Year = 2021
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Brand = "BMW",
+                            DrivingStyle = 1,
+                            Drivetrain = "RWD",
+                            EngineType = "3.0 Twin Turbo",
+                            HorsePower = 473,
+                            Model = "M3",
+                            Torque = 550,
+                            UserId = "b8c7553d-0b10-454f-8d1c-6cbf165168ff",
+                            Weight = 1680,
+                            Year = 2020
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Brand = "Subaru",
+                            DrivingStyle = 1,
+                            Drivetrain = "AWD",
+                            EngineType = "2.0 Turbo",
+                            HorsePower = 268,
+                            Model = "WRX",
+                            Torque = 350,
+                            UserId = "b8c7553d-0b10-454f-8d1c-6cbf165168ff",
+                            Weight = 1500,
+                            Year = 2019
+                        });
+                });
+
+            modelBuilder.Entity("AutoTuner.Models.PerformanceHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CarId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateApplied")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("NewPower")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NewTorque")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OldPower")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OldTorque")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CarId");
+
+                    b.ToTable("PerformanceHistories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CarId = 1,
+                            DateApplied = new DateTime(2023, 3, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            NewPower = 245,
+                            NewTorque = 370,
+                            OldPower = 230,
+                            OldTorque = 350
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CarId = 2,
+                            DateApplied = new DateTime(2023, 5, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            NewPower = 473,
+                            NewTorque = 550,
+                            OldPower = 430,
+                            OldTorque = 500
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CarId = 3,
+                            DateApplied = new DateTime(2023, 2, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            NewPower = 268,
+                            NewTorque = 350,
+                            OldPower = 250,
+                            OldTorque = 330
+                        });
+                });
+
+            modelBuilder.Entity("AutoTuner.Models.Recommendation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CarId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateGenerated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("PredictedPower")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PredictedTorque")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TuningPartId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TotalCost")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CarId");
+
+                    b.HasIndex("TuningPartId");
+
+                    b.ToTable("Recommendations");
+                });
+
+            modelBuilder.Entity("AutoTuner.Models.TuningPart", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<decimal>("Cost")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<double>("EfficiencyImpact")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<int>("PowerGain")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RecommendedForStyle")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TorqueGain")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TuningParts");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Category = "Intake",
+                            Cost = 450m,
+                            Description = "High flow intake system for improved airflow.",
+                            EfficiencyImpact = 2.5,
+                            Name = "Performance Air Intake",
+                            PowerGain = 15,
+                            RecommendedForStyle = 1,
+                            TorqueGain = 12
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Category = "Exhaust",
+                            Cost = 980m,
+                            Description = "Cat-back exhaust for enhanced sound and flow.",
+                            EfficiencyImpact = 1.5,
+                            Name = "Sport Exhaust",
+                            PowerGain = 20,
+                            RecommendedForStyle = 1,
+                            TorqueGain = 18
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Category = "Electronics",
+                            Cost = 650m,
+                            Description = "Software tune optimized for premium fuel.",
+                            EfficiencyImpact = -1.0,
+                            Name = "ECU Tune Stage 1",
+                            PowerGain = 40,
+                            RecommendedForStyle = 0,
+                            TorqueGain = 60
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Category = "Chassis",
+                            Cost = 1200m,
+                            Description = "Forged wheels reducing unsprung mass.",
+                            EfficiencyImpact = 3.5,
+                            Name = "Lightweight Wheels",
+                            PowerGain = 0,
+                            RecommendedForStyle = 0,
+                            TorqueGain = 0
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Category = "Fuel",
+                            Cost = 750m,
+                            Description = "Supports higher boost levels with consistent fuel delivery.",
+                            EfficiencyImpact = -2.0,
+                            Name = "High-Flow Fuel Pump",
+                            PowerGain = 25,
+                            RecommendedForStyle = 1,
+                            TorqueGain = 28
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Category = "Electronics",
+                            Cost = 300m,
+                            Description = "Economy focused tune for better mileage.",
+                            EfficiencyImpact = 6.0,
+                            Name = "Eco Driving Chip",
+                            PowerGain = 5,
+                            RecommendedForStyle = 2,
+                            TorqueGain = 8
+                        });
+                });
+
+            modelBuilder.Entity("AutoTuner.Models.Workshop", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<double>("Latitude")
+                        .HasColumnType("float");
+
+                    b.Property<double>("Longitude")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("Specialization")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Workshops");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Address = "123 Speed Ave",
+                            City = "Sofia",
+                            Latitude = 42.6977,
+                            Longitude = 23.3219,
+                            Name = "Turbo Masters",
+                            Specialization = "Forced Induction"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Address = "45 Track St",
+                            City = "Plovdiv",
+                            Latitude = 42.1354,
+                            Longitude = 24.7453,
+                            Name = "Precision Tuners",
+                            Specialization = "ECU Calibration"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Address = "78 Green Blvd",
+                            City = "Varna",
+                            Latitude = 43.2141,
+                            Longitude = 27.9147,
+                            Name = "EcoDrive Labs",
+                            Specialization = "Hybrid & Economy"
+                        });
+                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
@@ -29,29 +416,30 @@ namespace AutoTuner.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(256)")
-                        .HasMaxLength(256);
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("NormalizedName")
-                        .HasColumnType("nvarchar(256)")
-                        .HasMaxLength(256);
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()
-                        .HasName("RoleNameIndex")
+                        .HasDatabaseName("RoleNameIndex")
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
-                    b.ToTable("AspNetRoles");
+                    b.ToTable("AspNetRoles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
                         .HasColumnType("nvarchar(max)");
@@ -67,7 +455,7 @@ namespace AutoTuner.Data.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetRoleClaims");
+                    b.ToTable("AspNetRoleClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
@@ -83,8 +471,8 @@ namespace AutoTuner.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
-                        .HasColumnType("nvarchar(256)")
-                        .HasMaxLength(256);
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
@@ -96,12 +484,12 @@ namespace AutoTuner.Data.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("NormalizedEmail")
-                        .HasColumnType("nvarchar(256)")
-                        .HasMaxLength(256);
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("NormalizedUserName")
-                        .HasColumnType("nvarchar(256)")
-                        .HasMaxLength(256);
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
@@ -119,28 +507,49 @@ namespace AutoTuner.Data.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("UserName")
-                        .HasColumnType("nvarchar(256)")
-                        .HasMaxLength(256);
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedEmail")
-                        .HasName("EmailIndex");
+                        .HasDatabaseName("EmailIndex");
 
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
-                        .HasName("UserNameIndex")
+                        .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                    b.ToTable("AspNetUsers");
+                    b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "b8c7553d-0b10-454f-8d1c-6cbf165168ff",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "DEMO-CONCURRENCY-STAMP",
+                            Email = "demo@autotuner.ai",
+                            EmailConfirmed = true,
+                            LockoutEnabled = false,
+                            LockoutEnd = (DateTimeOffset?)null,
+                            NormalizedEmail = "DEMO@AUTOTUNER.AI",
+                            NormalizedUserName = "DEMO@AUTOTUNER.AI",
+                            PasswordHash = "AQEAAAAQJwAAEAAAAD0vHIqbDU5vESIzRFVmd4ggAAAAJMotm0/c8s7LQD6BsIbVrk5VdXVsXfA/pffr8XvOroU=",
+                            PhoneNumber = (string)null,
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "DEMO-SECURITY-STAMP",
+                            TwoFactorEnabled = false,
+                            UserName = "demo@autotuner.ai"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
                         .HasColumnType("nvarchar(max)");
@@ -156,7 +565,7 @@ namespace AutoTuner.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserClaims");
+                    b.ToTable("AspNetUserClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
@@ -180,7 +589,7 @@ namespace AutoTuner.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserLogins");
+                    b.ToTable("AspNetUserLogins", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
@@ -195,7 +604,7 @@ namespace AutoTuner.Data.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetUserRoles");
+                    b.ToTable("AspNetUserRoles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -216,58 +625,60 @@ namespace AutoTuner.Data.Migrations
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("AspNetUserTokens");
+                    b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+            modelBuilder.Entity("AutoTuner.Models.Car", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+            modelBuilder.Entity("AutoTuner.Models.PerformanceHistory", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
+                    b.HasOne("AutoTuner.Models.Car", "Car")
+                        .WithMany("PerformanceHistory")
+                        .HasForeignKey("CarId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Car");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+            modelBuilder.Entity("AutoTuner.Models.Recommendation", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
-                        .WithMany()
-                        .HasForeignKey("RoleId")
+                    b.HasOne("AutoTuner.Models.Car", "Car")
+                        .WithMany("Recommendations")
+                        .HasForeignKey("CarId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
+                    b.HasOne("AutoTuner.Models.TuningPart", "TuningPart")
+                        .WithMany("Recommendations")
+                        .HasForeignKey("TuningPartId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Car");
+
+                    b.Navigation("TuningPart");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+            modelBuilder.Entity("AutoTuner.Models.Car", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("PerformanceHistory");
+
+                    b.Navigation("Recommendations");
+                });
+
+            modelBuilder.Entity("AutoTuner.Models.TuningPart", b =>
+                {
+                    b.Navigation("Recommendations");
                 });
 #pragma warning restore 612, 618
         }
