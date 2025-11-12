@@ -1,8 +1,16 @@
-namespace AutoTuner.Models;
+﻿using System.ComponentModel.DataAnnotations;
 
-public enum DrivingStyle
+namespace AutoTuner.Models
 {
-    Daily,
-    Sport,
-    Eco
+    public enum DrivingStyle
+    {
+        [Display(Name = "Икономичен")]
+        Eco = 1,
+
+        [Display(Name = "Ежедневен")]
+        Daily = 2,
+
+        [Display(Name = "Спортен")]
+        Sport = 3
+    }
 }
