@@ -1,9 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="light">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - AutoTuner AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SzlrxWriC3z8VV4z8a7d4vH7N6U5u0r1w6hZ+qzlJ4QYJz6D6D9C9NC0xF0kJ5l9e6x80f6+ruJ8y4C+Y1P2HQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <environment include="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     </environment>
@@ -15,16 +19,21 @@
     <link rel="stylesheet" href="~/AutoTuner.styles.css" asp-append-version="true" />
     @RenderSection("Styles", required: false)
 </head>
-<body>
-    <header class="shadow-sm">
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <div class="container-fluid">
+<body class="app-shell theme-light">
+    <div class="ambient-bg">
+        <span class="glow glow-1"></span>
+        <span class="glow glow-2"></span>
+        <span class="glow glow-3"></span>
+    </div>
+    <header class="container-xxl">
+        <nav class="navbar navbar-expand-lg neon-navbar" data-bs-theme="dark">
+            <div class="container-fluid px-0">
                 <a class="navbar-brand fw-bold" asp-area="" asp-controller="Home" asp-action="Index">AutoTuner AI</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 align-items-lg-center gap-lg-2">
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
@@ -44,20 +53,28 @@
                             <a class="nav-link" asp-controller="Dashboard" asp-action="Index">Dashboard</a>
                         </li>
                     </ul>
-                    <partial name="_LoginPartial" />
+                    <div class="d-flex align-items-center gap-2 ms-lg-3">
+                        <button id="theme-toggle" type="button" class="theme-toggle" aria-label="Toggle theme">
+                            <i class="fa-solid fa-moon"></i>
+                        </button>
+                        <partial name="_LoginPartial" />
+                    </div>
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container my-4">
-        <main role="main" class="pb-3">
+    <main class="py-4">
+        <div class="container-xxl">
             @RenderBody()
-        </main>
-    </div>
-
-    <footer class="border-top footer text-muted py-3">
-        <div class="container">
-            &copy; @DateTime.Now.Year - AutoTuner AI - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </main>
+    <footer class="py-4 mt-auto">
+        <div class="container-xxl d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+            <div class="footer-logo">AutoTuner AI</div>
+            <div class="footer-links d-flex flex-wrap gap-3">
+                <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                <span>&copy; @DateTime.Now.Year AutoTuner AI. Built for enthusiasts.</span>
+            </div>
         </div>
     </footer>
 
