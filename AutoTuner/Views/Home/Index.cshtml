@@ -1,8 +1,41 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@{
+    ViewData["Title"] = "AutoTuner AI";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<section class="py-5 text-center bg-light rounded-3">
+    <div class="container">
+        <h1 class="display-4 fw-bold">AutoTuner AI – Intelligent Car Performance Optimizer</h1>
+        <p class="lead">Analyze your vehicle, discover tailored tuning upgrades, and visualize the performance gains before you invest.</p>
+        <a asp-controller="Car" asp-action="Create" class="btn btn-primary btn-lg me-2">Add your car</a>
+        <a asp-controller="Recommendation" asp-action="Index" class="btn btn-outline-secondary btn-lg">View recommendations</a>
+    </div>
+</section>
+
+<section class="mt-5">
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">AI-driven insights</h5>
+                    <p class="card-text">Our rule-based AI blends horsepower, torque, weight, and driving style to produce realistic upgrade projections.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Visual analytics</h5>
+                    <p class="card-text">Interactive charts compare before vs after performance, while the dashboard tracks cost and efficiency metrics.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Tuning ecosystem</h5>
+                    <p class="card-text">Browse curated parts, monitor applied upgrades, and locate trusted workshops on the interactive map.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
