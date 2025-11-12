@@ -1,4 +1,4 @@
-﻿using AutoTuner.Data;
+using AutoTuner.Data;
 using AutoTuner.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -19,96 +19,103 @@ public class CarController : Controller
         _userManager = userManager;
     }
 
-    // 🧭 Списък с коли
     public async Task<IActionResult> Index()
     {
         var userId = _userManager.GetUserId(User);
-        var cars = await _context.Cars
-            .Where(c => c.UserId == userId)
-            .OrderBy(c => c.Brand)
-            .ToListAsync();
-
+        var cars = await _context.Cars.Where(c => c.UserId == userId).ToListAsync();
         return View(cars);
     }
 
-    // 🔍 Детайли за конкретна кола
     public async Task<IActionResult> Details(int? id)
     {
         if (id == null)
+        {
             return NotFound();
+        }
 
         var userId = _userManager.GetUserId(User);
-        var car = await _context.Cars
-            .FirstOrDefaultAsync(m => m.Id == id && m.UserId == userId);
-
+        var car = await _context.Cars.FirstOrDefaultAsync(m => m.Id == id && m.UserId == userId);
         if (car == null)
+        {
             return NotFound();
+        }
 
         return View(car);
     }
 
-    // ➕ Форма за добавяне
     public IActionResult Create()
     {
         return View(new Car { DrivingStyle = DrivingStyle.Daily });
     }
 
-    // 🧩 Добавяне (POST)
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(Car car)
     {
-        // 🔹 Вземаме текущия потребител
-        var user = await _userManager.GetUserAsync(User);
-        if (user == null)
-            return Challenge(); // ако не е логнат
+        var userId = _userManager.GetUserId(User);
+        if (userId == null)
+        {
+            return Challenge();
+        }
 
-        // 🔹 Автоматично задаваме UserId преди валидация
-        car.UserId = user.Id;
-
-        // 🔹 Изчистваме евентуални грешки по това поле
+        car.UserId = userId;
         ModelState.Remove(nameof(Car.UserId));
 
-        if (!ModelState.IsValid)
-            return View(car);
-
-        _context.Add(car);
-        await _context.SaveChangesAsync();
-
-        return RedirectToAction(nameof(Index));
-    }
-
-    // ✏️ Редактиране
-    public async Task<IActionResult> Edit(int? id)
-    {
-        if (id == null)
-            return NotFound();
-
-        var userId = _userManager.GetUserId(User);
-        var car = await _context.Cars.FirstOrDefaultAsync(c => c.Id == id && c.UserId == userId);
-
-        if (car == null)
-            return NotFound();
+        if (ModelState.IsValid)
+        {
+            _context.Add(car);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
 
         return View(car);
     }
 
-    // ✏️ Редактиране (POST)
+    public async Task<IActionResult> Edit(int? id)
+    {
+        if (id == null)
+        {
+            return NotFound();
+        }
+
+        var userId = _userManager.GetUserId(User);
+        var car = await _context.Cars.FirstOrDefaultAsync(c => c.Id == id && c.UserId == userId);
+        if (car == null)
+        {
+            return NotFound();
+        }
+
+        return View(car);
+    }
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, Car car)
     {
         if (id != car.Id)
+        {
             return NotFound();
+        }
 
         var userId = _userManager.GetUserId(User);
-        car.UserId = userId!; // 🔹 отново присвояваме UserId
+        var existing = await _context.Cars.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id && c.UserId == userId);
+        if (existing == null)
+        {
+            return NotFound();
+        }
 
-        // 🔹 премахваме евентуална грешка при валидация на UserId
+        if (userId == null)
+        {
+            return Challenge();
+        }
+
+        car.UserId = userId;
         ModelState.Remove(nameof(Car.UserId));
 
         if (!ModelState.IsValid)
+        {
             return View(car);
+        }
 
         try
         {
@@ -118,24 +125,28 @@ public class CarController : Controller
         catch (DbUpdateConcurrencyException)
         {
             if (!CarExists(car.Id, userId))
+            {
                 return NotFound();
+            }
             throw;
         }
 
         return RedirectToAction(nameof(Index));
     }
 
-    // 🗑️ Изтриване
     public async Task<IActionResult> Delete(int? id)
     {
         if (id == null)
+        {
             return NotFound();
+        }
 
         var userId = _userManager.GetUserId(User);
         var car = await _context.Cars.FirstOrDefaultAsync(m => m.Id == id && m.UserId == userId);
-
         if (car == null)
+        {
             return NotFound();
+        }
 
         return View(car);
     }
@@ -147,11 +158,12 @@ public class CarController : Controller
         var userId = _userManager.GetUserId(User);
         var car = await _context.Cars.FirstOrDefaultAsync(c => c.Id == id && c.UserId == userId);
         if (car == null)
+        {
             return NotFound();
+        }
 
         _context.Cars.Remove(car);
         await _context.SaveChangesAsync();
-
         return RedirectToAction(nameof(Index));
     }
 
