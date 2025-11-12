@@ -4,6 +4,7 @@ using AutoTuner.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AutoTuner.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251112114231_InitializeDb")]
+    partial class InitializeDb
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -35,13 +38,13 @@ namespace AutoTuner.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int>("DrivingStyle")
-                        .HasColumnType("int");
-
                     b.Property<string>("Drivetrain")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("DrivingStyle")
+                        .HasColumnType("int");
 
                     b.Property<string>("EngineType")
                         .IsRequired()
@@ -80,8 +83,8 @@ namespace AutoTuner.Data.Migrations
                         {
                             Id = 1,
                             Brand = "Volkswagen",
-                            DrivingStyle = 0,
                             Drivetrain = "FWD",
+                            DrivingStyle = 0,
                             EngineType = "2.0 TSI",
                             HorsePower = 245,
                             Model = "Golf GTI",
@@ -94,8 +97,8 @@ namespace AutoTuner.Data.Migrations
                         {
                             Id = 2,
                             Brand = "BMW",
-                            DrivingStyle = 1,
                             Drivetrain = "RWD",
+                            DrivingStyle = 1,
                             EngineType = "3.0 Twin Turbo",
                             HorsePower = 473,
                             Model = "M3",
@@ -108,8 +111,8 @@ namespace AutoTuner.Data.Migrations
                         {
                             Id = 3,
                             Brand = "Subaru",
-                            DrivingStyle = 1,
                             Drivetrain = "AWD",
+                            DrivingStyle = 1,
                             EngineType = "2.0 Turbo",
                             HorsePower = 268,
                             Model = "WRX",
@@ -199,26 +202,17 @@ namespace AutoTuner.Data.Migrations
                     b.Property<DateTime>("DateGenerated")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal?>("Budget")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("Goal")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IncludeSafetyParts")
-                        .HasColumnType("bit");
-
                     b.Property<int>("PredictedPower")
                         .HasColumnType("int");
 
                     b.Property<int>("PredictedTorque")
                         .HasColumnType("int");
 
-                    b.Property<int>("TuningPartId")
-                        .HasColumnType("int");
-
                     b.Property<decimal>("TotalCost")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("TuningPartId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -263,9 +257,6 @@ namespace AutoTuner.Data.Migrations
                     b.Property<int>("RecommendedForStyle")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsSafetyCritical")
-                        .HasColumnType("bit");
-
                     b.Property<int>("TorqueGain")
                         .HasColumnType("int");
 
@@ -281,7 +272,6 @@ namespace AutoTuner.Data.Migrations
                             Cost = 450m,
                             Description = "High flow intake system for improved airflow.",
                             EfficiencyImpact = 2.5,
-                            IsSafetyCritical = false,
                             Name = "Performance Air Intake",
                             PowerGain = 15,
                             RecommendedForStyle = 1,
@@ -294,7 +284,6 @@ namespace AutoTuner.Data.Migrations
                             Cost = 980m,
                             Description = "Cat-back exhaust for enhanced sound and flow.",
                             EfficiencyImpact = 1.5,
-                            IsSafetyCritical = false,
                             Name = "Sport Exhaust",
                             PowerGain = 20,
                             RecommendedForStyle = 1,
@@ -307,7 +296,6 @@ namespace AutoTuner.Data.Migrations
                             Cost = 650m,
                             Description = "Software tune optimized for premium fuel.",
                             EfficiencyImpact = -1.0,
-                            IsSafetyCritical = false,
                             Name = "ECU Tune Stage 1",
                             PowerGain = 40,
                             RecommendedForStyle = 0,
@@ -320,7 +308,6 @@ namespace AutoTuner.Data.Migrations
                             Cost = 1200m,
                             Description = "Forged wheels reducing unsprung mass.",
                             EfficiencyImpact = 3.5,
-                            IsSafetyCritical = false,
                             Name = "Lightweight Wheels",
                             PowerGain = 0,
                             RecommendedForStyle = 0,
@@ -333,7 +320,6 @@ namespace AutoTuner.Data.Migrations
                             Cost = 750m,
                             Description = "Supports higher boost levels with consistent fuel delivery.",
                             EfficiencyImpact = -2.0,
-                            IsSafetyCritical = false,
                             Name = "High-Flow Fuel Pump",
                             PowerGain = 25,
                             RecommendedForStyle = 1,
@@ -346,37 +332,10 @@ namespace AutoTuner.Data.Migrations
                             Cost = 300m,
                             Description = "Economy focused tune for better mileage.",
                             EfficiencyImpact = 6.0,
-                            IsSafetyCritical = false,
                             Name = "Eco Driving Chip",
                             PowerGain = 5,
                             RecommendedForStyle = 2,
                             TorqueGain = 8
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Category = "Brakes",
-                            Cost = 1100m,
-                            Description = "Six-piston calipers with semi-slick pads for confident stopping power.",
-                            EfficiencyImpact = -0.5,
-                            IsSafetyCritical = true,
-                            Name = "Performance Brake Kit",
-                            PowerGain = 0,
-                            RecommendedForStyle = 1,
-                            TorqueGain = 0
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Category = "Suspension",
-                            Cost = 1400m,
-                            Description = "Height and damping adjustable coilovers tuned for spirited driving.",
-                            EfficiencyImpact = 2.0,
-                            IsSafetyCritical = true,
-                            Name = "Adjustable Coilover Suspension",
-                            PowerGain = 0,
-                            RecommendedForStyle = 1,
-                            TorqueGain = 5
                         });
                 });
 
@@ -423,8 +382,8 @@ namespace AutoTuner.Data.Migrations
                             Id = 1,
                             Address = "123 Speed Ave",
                             City = "Sofia",
-                            Latitude = 42.6977,
-                            Longitude = 23.3219,
+                            Latitude = 42.697699999999998,
+                            Longitude = 23.321899999999999,
                             Name = "Turbo Masters",
                             Specialization = "Forced Induction"
                         },
@@ -433,7 +392,7 @@ namespace AutoTuner.Data.Migrations
                             Id = 2,
                             Address = "45 Track St",
                             City = "Plovdiv",
-                            Latitude = 42.1354,
+                            Latitude = 42.135399999999997,
                             Longitude = 24.7453,
                             Name = "Precision Tuners",
                             Specialization = "ECU Calibration"
@@ -443,7 +402,7 @@ namespace AutoTuner.Data.Migrations
                             Id = 3,
                             Address = "78 Green Blvd",
                             City = "Varna",
-                            Latitude = 43.2141,
+                            Latitude = 43.214100000000002,
                             Longitude = 27.9147,
                             Name = "EcoDrive Labs",
                             Specialization = "Hybrid & Economy"
@@ -575,11 +534,9 @@ namespace AutoTuner.Data.Migrations
                             Email = "demo@autotuner.ai",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
-                            LockoutEnd = (DateTimeOffset?)null,
                             NormalizedEmail = "DEMO@AUTOTUNER.AI",
                             NormalizedUserName = "DEMO@AUTOTUNER.AI",
                             PasswordHash = "AQEAAAAQJwAAEAAAAD0vHIqbDU5vESIzRFVmd4ggAAAAJMotm0/c8s7LQD6BsIbVrk5VdXVsXfA/pffr8XvOroU=",
-                            PhoneNumber = (string)null,
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "DEMO-SECURITY-STAMP",
                             TwoFactorEnabled = false,
@@ -711,6 +668,57 @@ namespace AutoTuner.Data.Migrations
                     b.Navigation("Car");
 
                     b.Navigation("TuningPart");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("AutoTuner.Models.Car", b =>
