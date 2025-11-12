@@ -1,0 +1,59 @@
+@model IEnumerable<AutoTuner.Models.Workshop>
+@{
+    ViewData["Title"] = "Tuning Workshops";
+    var specialization = ViewData["Specialization"] as string;
+    var jsonOptions = new System.Text.Json.JsonSerializerOptions { PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase };
+    var serialized = System.Text.Json.JsonSerializer.Serialize(Model.Select(w => new { w.Name, w.City, w.Address, w.Latitude, w.Longitude, w.Specialization }), jsonOptions);
+}
+
+<h2 class="mb-3">Tuning workshops</h2>
+<form method="get" class="row g-2 mb-3">
+    <div class="col-md-4">
+        <input type="text" name="specialization" value="@specialization" class="form-control" placeholder="Filter by specialization" />
+    </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-primary">Filter</button>
+    </div>
+</form>
+
+<div id="workshopMap" style="height: 400px;" class="mb-4 border"></div>
+
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>City</th>
+                <th>Address</th>
+                <th>Specialization</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var workshop in Model)
+        {
+            <tr>
+                <td>@workshop.Name</td>
+                <td>@workshop.City</td>
+                <td>@workshop.Address</td>
+                <td>@workshop.Specialization</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script>
+        const workshops = @Html.Raw(serialized);
+        const map = L.map('workshopMap').setView([42.6977, 23.3219], 6);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        workshops.forEach(workshop => {
+            const marker = L.marker([workshop.latitude, workshop.longitude]).addTo(map);
+            marker.bindPopup(`<strong>${workshop.name}</strong><br/>${workshop.address}<br/><em>${workshop.specialization ?? ''}</em>`);
+        });
+    </script>
+}
