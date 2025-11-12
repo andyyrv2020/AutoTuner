@@ -1,22 +1,38 @@
 using AutoTuner.Data;
+using AutoTuner.Services;
+using Hangfire;
+using Hangfire.MemoryStorage;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
+
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddDefaultIdentity<IdentityUser>(options =>
+    {
+        options.SignIn.RequireConfirmedAccount = false;
+    })
     .AddEntityFrameworkStores<ApplicationDbContext>();
+
+builder.Services.AddScoped<IRecommendationService, RecommendationService>();
+
 builder.Services.AddControllersWithViews();
+builder.Services.AddRazorPages();
+
+builder.Services.AddHangfire(configuration =>
+{
+    configuration.UseMemoryStorage();
+});
+
+builder.Services.AddHangfireServer();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
@@ -24,14 +40,16 @@ if (app.Environment.IsDevelopment())
 else
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 app.UseRouting();
-
+app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseHangfireDashboard("/hangfire");
 
 app.MapStaticAssets();
 
@@ -42,5 +60,7 @@ app.MapControllerRoute(
 
 app.MapRazorPages()
    .WithStaticAssets();
+
+RecurringJob.AddOrUpdate<IRecommendationService>("refresh-demo-car", service => service.GenerateRecommendationsAsync(1), Cron.Daily);
 
 app.Run();
