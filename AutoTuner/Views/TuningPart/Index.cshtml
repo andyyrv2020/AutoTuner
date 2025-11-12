@@ -20,13 +20,20 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <h5 class="card-title mb-0">@part.Name</h5>
-                        <span class="badge bg-secondary">@part.Category</span>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge bg-secondary">@part.Category</span>
+                            @if (part.IsSafetyCritical)
+                            {
+                                <span class="badge bg-warning text-dark">Safety</span>
+                            }
+                        </div>
                     </div>
                     <p class="card-text mt-2">@part.Description</p>
                     <ul class="list-inline small text-muted">
                         <li class="list-inline-item"><strong>Power:</strong> +@part.PowerGain hp</li>
                         <li class="list-inline-item"><strong>Torque:</strong> +@part.TorqueGain Nm</li>
                         <li class="list-inline-item"><strong>Efficiency:</strong> @part.EfficiencyImpact%</li>
+                        <li class="list-inline-item"><strong>Style:</strong> @part.RecommendedForStyle</li>
                     </ul>
                 </div>
                 <div class="card-footer d-flex justify-content-between align-items-center">

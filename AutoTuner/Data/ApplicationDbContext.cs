@@ -101,7 +101,8 @@ public class ApplicationDbContext : IdentityDbContext
                 TorqueGain = 12,
                 EfficiencyImpact = 2.5,
                 Cost = 450m,
-                RecommendedForStyle = DrivingStyle.Sport
+                RecommendedForStyle = DrivingStyle.Sport,
+                IsSafetyCritical = false
             },
             new TuningPart
             {
@@ -113,7 +114,8 @@ public class ApplicationDbContext : IdentityDbContext
                 TorqueGain = 18,
                 EfficiencyImpact = 1.5,
                 Cost = 980m,
-                RecommendedForStyle = DrivingStyle.Sport
+                RecommendedForStyle = DrivingStyle.Sport,
+                IsSafetyCritical = false
             },
             new TuningPart
             {
@@ -125,7 +127,8 @@ public class ApplicationDbContext : IdentityDbContext
                 TorqueGain = 60,
                 EfficiencyImpact = -1.0,
                 Cost = 650m,
-                RecommendedForStyle = DrivingStyle.Daily
+                RecommendedForStyle = DrivingStyle.Daily,
+                IsSafetyCritical = false
             },
             new TuningPart
             {
@@ -137,7 +140,8 @@ public class ApplicationDbContext : IdentityDbContext
                 TorqueGain = 0,
                 EfficiencyImpact = 3.5,
                 Cost = 1200m,
-                RecommendedForStyle = DrivingStyle.Daily
+                RecommendedForStyle = DrivingStyle.Daily,
+                IsSafetyCritical = false
             },
             new TuningPart
             {
@@ -149,7 +153,8 @@ public class ApplicationDbContext : IdentityDbContext
                 TorqueGain = 28,
                 EfficiencyImpact = -2.0,
                 Cost = 750m,
-                RecommendedForStyle = DrivingStyle.Sport
+                RecommendedForStyle = DrivingStyle.Sport,
+                IsSafetyCritical = false
             },
             new TuningPart
             {
@@ -161,7 +166,34 @@ public class ApplicationDbContext : IdentityDbContext
                 TorqueGain = 8,
                 EfficiencyImpact = 6.0,
                 Cost = 300m,
-                RecommendedForStyle = DrivingStyle.Eco
+                RecommendedForStyle = DrivingStyle.Eco,
+                IsSafetyCritical = false
+            },
+            new TuningPart
+            {
+                Id = 7,
+                Name = "Performance Brake Kit",
+                Category = "Brakes",
+                Description = "Six-piston calipers with semi-slick pads for confident stopping power.",
+                PowerGain = 0,
+                TorqueGain = 0,
+                EfficiencyImpact = -0.5,
+                Cost = 1100m,
+                RecommendedForStyle = DrivingStyle.Sport,
+                IsSafetyCritical = true
+            },
+            new TuningPart
+            {
+                Id = 8,
+                Name = "Adjustable Coilover Suspension",
+                Category = "Suspension",
+                Description = "Height and damping adjustable coilovers tuned for spirited driving.",
+                PowerGain = 0,
+                TorqueGain = 5,
+                EfficiencyImpact = 2.0,
+                Cost = 1400m,
+                RecommendedForStyle = DrivingStyle.Sport,
+                IsSafetyCritical = true
             });
 
         builder.Entity<Workshop>().HasData(

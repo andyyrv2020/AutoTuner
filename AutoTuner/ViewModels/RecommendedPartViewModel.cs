@@ -10,4 +10,5 @@ public class RecommendedPartViewModel
     public int TorqueGain { get; set; }
     public double EfficiencyImpact { get; set; }
     public decimal Cost { get; set; }
+    public bool IsSafetyCritical { get; set; }
 }

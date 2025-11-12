@@ -1,5 +1,6 @@
 using AutoTuner.Data;
 using AutoTuner.Services;
+using AutoTuner.ViewModels;
 using Hangfire;
 using Hangfire.MemoryStorage;
 using Microsoft.AspNetCore.Identity;
@@ -61,6 +62,6 @@ app.MapControllerRoute(
 app.MapRazorPages()
    .WithStaticAssets();
 
-RecurringJob.AddOrUpdate<IRecommendationService>("refresh-demo-car", service => service.GenerateRecommendationsAsync(1), Cron.Daily);
+RecurringJob.AddOrUpdate<IRecommendationService>("refresh-demo-car", service => service.GenerateRecommendationsAsync(1, new RecommendationRequestOptions()), Cron.Daily);
 
 app.Run();

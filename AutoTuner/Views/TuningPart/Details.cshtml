@@ -13,5 +13,6 @@
     <li class="list-group-item"><strong>Efficiency Impact:</strong> @Model.EfficiencyImpact%</li>
     <li class="list-group-item"><strong>Cost:</strong> @Model.Cost.ToString("C")</li>
     <li class="list-group-item"><strong>Driving Style:</strong> @Model.RecommendedForStyle</li>
+    <li class="list-group-item"><strong>Safety Critical:</strong> @(Model.IsSafetyCritical ? "Yes" : "No")</li>
 </ul>
 <a class="btn btn-secondary" asp-action="Index">Back to parts</a>

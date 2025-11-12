@@ -41,4 +41,10 @@
         <select asp-for="RecommendedForStyle" class="form-select" asp-items="Html.GetEnumSelectList<AutoTuner.Models.DrivingStyle>()"></select>
         <span asp-validation-for="RecommendedForStyle" class="text-danger"></span>
     </div>
+    <div class="col-md-4 align-self-end">
+        <div class="form-check form-switch mt-4">
+            <input class="form-check-input" asp-for="IsSafetyCritical" />
+            <label class="form-check-label" asp-for="IsSafetyCritical"></label>
+        </div>
+    </div>
 </div>

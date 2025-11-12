@@ -32,5 +32,8 @@ public class TuningPart
     [Required]
     public DrivingStyle RecommendedForStyle { get; set; }
 
+    [Display(Name = "Safety critical")]
+    public bool IsSafetyCritical { get; set; }
+
     public ICollection<Recommendation> Recommendations { get; set; } = new List<Recommendation>();
 }

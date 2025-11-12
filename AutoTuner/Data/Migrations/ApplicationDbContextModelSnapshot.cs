@@ -199,6 +199,15 @@ namespace AutoTuner.Data.Migrations
                     b.Property<DateTime>("DateGenerated")
                         .HasColumnType("datetime2");
 
+                    b.Property<decimal?>("Budget")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("Goal")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IncludeSafetyParts")
+                        .HasColumnType("bit");
+
                     b.Property<int>("PredictedPower")
                         .HasColumnType("int");
 
@@ -254,6 +263,9 @@ namespace AutoTuner.Data.Migrations
                     b.Property<int>("RecommendedForStyle")
                         .HasColumnType("int");
 
+                    b.Property<bool>("IsSafetyCritical")
+                        .HasColumnType("bit");
+
                     b.Property<int>("TorqueGain")
                         .HasColumnType("int");
 
@@ -269,6 +281,7 @@ namespace AutoTuner.Data.Migrations
                             Cost = 450m,
                             Description = "High flow intake system for improved airflow.",
                             EfficiencyImpact = 2.5,
+                            IsSafetyCritical = false,
                             Name = "Performance Air Intake",
                             PowerGain = 15,
                             RecommendedForStyle = 1,
@@ -281,6 +294,7 @@ namespace AutoTuner.Data.Migrations
                             Cost = 980m,
                             Description = "Cat-back exhaust for enhanced sound and flow.",
                             EfficiencyImpact = 1.5,
+                            IsSafetyCritical = false,
                             Name = "Sport Exhaust",
                             PowerGain = 20,
                             RecommendedForStyle = 1,
@@ -293,6 +307,7 @@ namespace AutoTuner.Data.Migrations
                             Cost = 650m,
                             Description = "Software tune optimized for premium fuel.",
                             EfficiencyImpact = -1.0,
+                            IsSafetyCritical = false,
                             Name = "ECU Tune Stage 1",
                             PowerGain = 40,
                             RecommendedForStyle = 0,
@@ -305,6 +320,7 @@ namespace AutoTuner.Data.Migrations
                             Cost = 1200m,
                             Description = "Forged wheels reducing unsprung mass.",
                             EfficiencyImpact = 3.5,
+                            IsSafetyCritical = false,
                             Name = "Lightweight Wheels",
                             PowerGain = 0,
                             RecommendedForStyle = 0,
@@ -317,6 +333,7 @@ namespace AutoTuner.Data.Migrations
                             Cost = 750m,
                             Description = "Supports higher boost levels with consistent fuel delivery.",
                             EfficiencyImpact = -2.0,
+                            IsSafetyCritical = false,
                             Name = "High-Flow Fuel Pump",
                             PowerGain = 25,
                             RecommendedForStyle = 1,
@@ -329,10 +346,37 @@ namespace AutoTuner.Data.Migrations
                             Cost = 300m,
                             Description = "Economy focused tune for better mileage.",
                             EfficiencyImpact = 6.0,
+                            IsSafetyCritical = false,
                             Name = "Eco Driving Chip",
                             PowerGain = 5,
                             RecommendedForStyle = 2,
                             TorqueGain = 8
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Category = "Brakes",
+                            Cost = 1100m,
+                            Description = "Six-piston calipers with semi-slick pads for confident stopping power.",
+                            EfficiencyImpact = -0.5,
+                            IsSafetyCritical = true,
+                            Name = "Performance Brake Kit",
+                            PowerGain = 0,
+                            RecommendedForStyle = 1,
+                            TorqueGain = 0
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Category = "Suspension",
+                            Cost = 1400m,
+                            Description = "Height and damping adjustable coilovers tuned for spirited driving.",
+                            EfficiencyImpact = 2.0,
+                            IsSafetyCritical = true,
+                            Name = "Adjustable Coilover Suspension",
+                            PowerGain = 0,
+                            RecommendedForStyle = 1,
+                            TorqueGain = 5
                         });
                 });
 
@@ -667,18 +711,6 @@ namespace AutoTuner.Data.Migrations
                     b.Navigation("Car");
 
                     b.Navigation("TuningPart");
-                });
-
-            modelBuilder.Entity("AutoTuner.Models.Car", b =>
-                {
-                    b.Navigation("PerformanceHistory");
-
-                    b.Navigation("Recommendations");
-                });
-
-            modelBuilder.Entity("AutoTuner.Models.TuningPart", b =>
-                {
-                    b.Navigation("Recommendations");
                 });
 
             modelBuilder.Entity("AutoTuner.Models.Car", b =>

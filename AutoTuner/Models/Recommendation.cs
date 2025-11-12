@@ -19,6 +19,13 @@ public class Recommendation
     [Range(0, 1000000)]
     public decimal TotalCost { get; set; }
 
+    public OptimizationGoal Goal { get; set; }
+
+    [Range(0, 1000000)]
+    public decimal? Budget { get; set; }
+
+    public bool IncludeSafetyParts { get; set; }
+
     public DateTime DateGenerated { get; set; }
 
     public Car? Car { get; set; }
