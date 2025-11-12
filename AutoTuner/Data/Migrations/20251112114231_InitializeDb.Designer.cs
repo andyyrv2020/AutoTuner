@@ -4,6 +4,7 @@ using AutoTuner.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AutoTuner.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251112114231_InitializeDb")]
+    partial class InitializeDb
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -35,13 +38,13 @@ namespace AutoTuner.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int>("DrivingStyle")
-                        .HasColumnType("int");
-
                     b.Property<string>("Drivetrain")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("DrivingStyle")
+                        .HasColumnType("int");
 
                     b.Property<string>("EngineType")
                         .IsRequired()
@@ -80,8 +83,8 @@ namespace AutoTuner.Data.Migrations
                         {
                             Id = 1,
                             Brand = "Volkswagen",
-                            DrivingStyle = 0,
                             Drivetrain = "FWD",
+                            DrivingStyle = 0,
                             EngineType = "2.0 TSI",
                             HorsePower = 245,
                             Model = "Golf GTI",
@@ -94,8 +97,8 @@ namespace AutoTuner.Data.Migrations
                         {
                             Id = 2,
                             Brand = "BMW",
-                            DrivingStyle = 1,
                             Drivetrain = "RWD",
+                            DrivingStyle = 1,
                             EngineType = "3.0 Twin Turbo",
                             HorsePower = 473,
                             Model = "M3",
@@ -108,8 +111,8 @@ namespace AutoTuner.Data.Migrations
                         {
                             Id = 3,
                             Brand = "Subaru",
-                            DrivingStyle = 1,
                             Drivetrain = "AWD",
+                            DrivingStyle = 1,
                             EngineType = "2.0 Turbo",
                             HorsePower = 268,
                             Model = "WRX",
@@ -205,11 +208,11 @@ namespace AutoTuner.Data.Migrations
                     b.Property<int>("PredictedTorque")
                         .HasColumnType("int");
 
-                    b.Property<int>("TuningPartId")
-                        .HasColumnType("int");
-
                     b.Property<decimal>("TotalCost")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("TuningPartId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -379,8 +382,8 @@ namespace AutoTuner.Data.Migrations
                             Id = 1,
                             Address = "123 Speed Ave",
                             City = "Sofia",
-                            Latitude = 42.6977,
-                            Longitude = 23.3219,
+                            Latitude = 42.697699999999998,
+                            Longitude = 23.321899999999999,
                             Name = "Turbo Masters",
                             Specialization = "Forced Induction"
                         },
@@ -389,7 +392,7 @@ namespace AutoTuner.Data.Migrations
                             Id = 2,
                             Address = "45 Track St",
                             City = "Plovdiv",
-                            Latitude = 42.1354,
+                            Latitude = 42.135399999999997,
                             Longitude = 24.7453,
                             Name = "Precision Tuners",
                             Specialization = "ECU Calibration"
@@ -399,7 +402,7 @@ namespace AutoTuner.Data.Migrations
                             Id = 3,
                             Address = "78 Green Blvd",
                             City = "Varna",
-                            Latitude = 43.2141,
+                            Latitude = 43.214100000000002,
                             Longitude = 27.9147,
                             Name = "EcoDrive Labs",
                             Specialization = "Hybrid & Economy"
@@ -531,11 +534,9 @@ namespace AutoTuner.Data.Migrations
                             Email = "demo@autotuner.ai",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
-                            LockoutEnd = (DateTimeOffset?)null,
                             NormalizedEmail = "DEMO@AUTOTUNER.AI",
                             NormalizedUserName = "DEMO@AUTOTUNER.AI",
                             PasswordHash = "AQEAAAAQJwAAEAAAAD0vHIqbDU5vESIzRFVmd4ggAAAAJMotm0/c8s7LQD6BsIbVrk5VdXVsXfA/pffr8XvOroU=",
-                            PhoneNumber = (string)null,
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "DEMO-SECURITY-STAMP",
                             TwoFactorEnabled = false,
@@ -669,16 +670,55 @@ namespace AutoTuner.Data.Migrations
                     b.Navigation("TuningPart");
                 });
 
-            modelBuilder.Entity("AutoTuner.Models.Car", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
-                    b.Navigation("PerformanceHistory");
-
-                    b.Navigation("Recommendations");
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
-            modelBuilder.Entity("AutoTuner.Models.TuningPart", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.Navigation("Recommendations");
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("AutoTuner.Models.Car", b =>
