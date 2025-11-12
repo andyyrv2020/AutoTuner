@@ -1,0 +1,125 @@
+@model AutoTuner.ViewModels.RecommendationPageViewModel
+@{
+    ViewData["Title"] = "AI Recommendations";
+}
+
+<h2 class="mb-3">AI Recommendations</h2>
+<form asp-action="Index" method="get" class="row g-3 mb-4">
+    <div class="col-md-6">
+        <label for="carId" class="form-label">Select car</label>
+        <select id="carId" name="carId" class="form-select" onchange="this.form.submit()">
+            <option value="">Choose...</option>
+            @foreach (var car in Model.Cars)
+            {
+                <option value="@car.Id" selected="@(Model.SelectedCarId == car.Id ? "selected" : null)">@car.Brand @car.Model (@car.Year)</option>
+            }
+        </select>
+    </div>
+</form>
+
+@if (Model.SelectedCarId.HasValue)
+{
+    <form asp-action="Generate" method="post" class="mb-4">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="carId" value="@Model.SelectedCarId" />
+        <button type="submit" class="btn btn-primary">Refresh recommendations</button>
+    </form>
+}
+
+@if (Model.Result is null)
+{
+    <div class="alert alert-info">Select a car to generate personalized tuning recommendations.</div>
+}
+else
+{
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Performance summary</h5>
+                    <p><strong>Original power:</strong> @Model.Result.Car.HorsePower hp</p>
+                    <p><strong>Predicted power:</strong> @Model.Result.PredictedPower hp</p>
+                    <p><strong>Original torque:</strong> @Model.Result.Car.Torque Nm</p>
+                    <p><strong>Predicted torque:</strong> @Model.Result.PredictedTorque Nm</p>
+                    <p><strong>Average efficiency impact:</strong> @Model.Result.AverageEfficiencyImpact %</p>
+                    <p><strong>Total investment:</strong> @Model.Result.TotalCost.ToString("C")</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-8">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Before vs After</h5>
+                    <canvas id="performanceChart" height="160"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mt-4">
+        <div class="card-body">
+            <h5 class="card-title">Recommended parts</h5>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Power Gain</th>
+                            <th>Torque Gain</th>
+                            <th>Efficiency</th>
+                            <th>Cost</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var part in Model.Result.Parts)
+                    {
+                        <tr>
+                            <td>@part.Name</td>
+                            <td>@part.Category</td>
+                            <td>+@part.PowerGain hp</td>
+                            <td>+@part.TorqueGain Nm</td>
+                            <td>@part.EfficiencyImpact %</td>
+                            <td>@part.Cost.ToString("C")</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    @section Scripts {
+        <script>
+            const performanceChart = document.getElementById('performanceChart');
+            if (performanceChart) {
+                new Chart(performanceChart, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Horsepower', 'Torque'],
+                        datasets: [
+                            {
+                                label: 'Before',
+                                backgroundColor: '#6c757d',
+                                data: [@Model.Result.Car.HorsePower, @Model.Result.Car.Torque]
+                            },
+                            {
+                                label: 'After',
+                                backgroundColor: '#0d6efd',
+                                data: [@Model.Result.PredictedPower, @Model.Result.PredictedTorque]
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+        </script>
+    }
+}

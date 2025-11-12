@@ -1,0 +1,44 @@
+@model AutoTuner.Models.TuningPart
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <label asp-for="Name" class="form-label"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Category" class="form-label"></label>
+        <input asp-for="Category" class="form-control" />
+        <span asp-validation-for="Category" class="text-danger"></span>
+    </div>
+    <div class="col-12">
+        <label asp-for="Description" class="form-label"></label>
+        <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="PowerGain" class="form-label"></label>
+        <input asp-for="PowerGain" class="form-control" />
+        <span asp-validation-for="PowerGain" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="TorqueGain" class="form-label"></label>
+        <input asp-for="TorqueGain" class="form-control" />
+        <span asp-validation-for="TorqueGain" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="EfficiencyImpact" class="form-label"></label>
+        <input asp-for="EfficiencyImpact" class="form-control" />
+        <span asp-validation-for="EfficiencyImpact" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Cost" class="form-label"></label>
+        <input asp-for="Cost" class="form-control" />
+        <span asp-validation-for="Cost" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="RecommendedForStyle" class="form-label"></label>
+        <select asp-for="RecommendedForStyle" class="form-select" asp-items="Html.GetEnumSelectList<AutoTuner.Models.DrivingStyle>()"></select>
+        <span asp-validation-for="RecommendedForStyle" class="text-danger"></span>
+    </div>
+</div>
