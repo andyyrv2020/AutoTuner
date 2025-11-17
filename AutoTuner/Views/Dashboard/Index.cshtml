@@ -116,16 +116,16 @@ else
                             </tr>
                         </thead>
                         <tbody>
-                        @foreach (var entry in Model.PerformanceHistory)
-                        {
-                            var car = Model.Cars.FirstOrDefault(c => c.Id == entry.CarId);
-                            <tr>
-                                <td>@car?.Brand @car?.Model</td>
-                                <td>@entry.DateApplied.ToString("dd MMM yyyy")</td>
-                                <td>@entry.OldPower hp → @entry.NewPower hp</td>
-                                <td>@entry.OldTorque Nm → @entry.NewTorque Nm</td>
-                            </tr>
-                        }
+                            @foreach (var entry in Model.PerformanceHistory)
+                            {
+                                var car = Model.Cars.FirstOrDefault(c => c.Id == entry.CarId);
+                                <tr>
+                                    <td>@car?.Brand @car?.Model</td>
+                                    <td>@entry.DateApplied.ToString("dd MMM yyyy")</td>
+                                    <td>@entry.OldPower hp → @entry.NewPower hp</td>
+                                    <td>@entry.OldTorque Nm → @entry.NewTorque Nm</td>
+                                </tr>
+                            }
                         </tbody>
                     </table>
                 </div>

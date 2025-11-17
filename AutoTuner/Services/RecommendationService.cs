@@ -227,6 +227,19 @@ public class RecommendationService : IRecommendationService
         return selected;
     }
 
+    private static double CalculateEfficiencyImpact(List<TuningPart> parts)
+    {
+        if (!parts.Any())
+            return 0;
+
+        // Средно въздействие на частите.
+        double impact = parts.Sum(p => p.EfficiencyImpact);
+
+        // Ограничаваме до реални стойности
+        return Math.Round(Math.Clamp(impact, -15.0, 20.0), 1);
+    }
+
+
     private static double CalculateBudgetScore(TuningPart part)
     {
         var gainScore = part.PowerGain * 1.2 + part.TorqueGain;
@@ -241,11 +254,21 @@ public class RecommendationService : IRecommendationService
         return power / tons;
     }
 
-    private static double EstimateZeroToHundred(double powerToWeight)
+    private static double EstimateZeroToHundred(int hpBefore, int hpAfter, double zeroToHundredBase)
     {
-        var baseline = 8.5 - powerToWeight * 0.35;
-        return Math.Round(Math.Clamp(baseline, 2.7, 12.0), 1);
+        if (hpBefore <= 0 || hpAfter <= 0)
+            return zeroToHundredBase;
+
+        // Повече мощност = по-бързо ускорение
+        double gainFactor = hpBefore / (double)hpAfter;
+
+        // Намаляваме времето според пропорцията
+        double newTime = zeroToHundredBase * gainFactor;
+
+        // Минимално реално ограничение (няма кола с 1.5s)
+        return Math.Round(Math.Clamp(newTime, 2.5, 20.0), 1);
     }
+
 
     private static RecommendationResultViewModel BuildResult(
         Car car,
@@ -262,8 +285,19 @@ public class RecommendationService : IRecommendationService
         var totalTorqueGain = predictedTorque - car.Torque;
         var powerToWeightBefore = CalculatePowerToWeight(car.HorsePower, car.Weight);
         var powerToWeightAfter = CalculatePowerToWeight(predictedPower, car.Weight);
-        var zeroToHundredBefore = EstimateZeroToHundred(powerToWeightBefore);
-        var zeroToHundredAfter = EstimateZeroToHundred(powerToWeightAfter);
+        // Добави си база в Car модела ако го нямаш (ZeroToHundred)
+        double zeroToHundredBefore = car.ZeroToHundred;
+
+        // Изчисляваме новото ускорение според HP gain
+        double zeroToHundredAfter = EstimateZeroToHundred(
+            car.HorsePower,
+            predictedPower,
+            zeroToHundredBefore
+        );
+
+        // Efficiency
+        double totalEfficiencyImpact = CalculateEfficiencyImpact(parts);
+
 
         var costPerHorsepower = totalPowerGain > 0 ? decimal.Round(totalCost / totalPowerGain, 2) : 0m;
         var costPerTorque = totalTorqueGain > 0 ? decimal.Round(totalCost / totalTorqueGain, 2) : 0m;
@@ -278,6 +312,13 @@ public class RecommendationService : IRecommendationService
         var costByCategory = parts
             .GroupBy(p => p.Category)
             .ToDictionary(g => g.Key, g => g.Sum(p => p.Cost), StringComparer.OrdinalIgnoreCase);
+
+        var efficiencyByCategory = parts
+            .GroupBy(p => p.Category)
+            .ToDictionary(
+                g => g.Key,
+                g => Math.Round(g.Sum(x => x.EfficiencyImpact), 2),
+                StringComparer.OrdinalIgnoreCase);
 
         var result = new RecommendationResultViewModel
         {
@@ -304,6 +345,7 @@ public class RecommendationService : IRecommendationService
             SafetyPartsIncluded = parts.Any(p => p.IsSafetyCritical),
             BudgetExceeded = budgetExceeded,
             BudgetUsagePercent = budgetUsagePercent,
+            EfficiencyByCategory = efficiencyByCategory,
             PowerToWeightBefore = Math.Round(powerToWeightBefore, 2),
             PowerToWeightAfter = Math.Round(powerToWeightAfter, 2),
             EstimatedZeroToHundredBefore = zeroToHundredBefore,

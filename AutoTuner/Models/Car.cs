@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Identity;
 
@@ -24,9 +24,11 @@ public class Car
 
     [Required]
     [StringLength(100)]
+    [Display(Name = "Engine Code")]
     public string EngineType { get; set; } = string.Empty;
 
     [Range(0, 2000)]
+    [Display(Name = "HP")]
     public int HorsePower { get; set; }
 
     [Range(0, 2000)]
@@ -38,7 +40,11 @@ public class Car
     [StringLength(100)]
     public string Drivetrain { get; set; } = string.Empty;
 
+    [Display(Name = "0–100 km/h (sec)")]
+    public double ZeroToHundred { get; set; } // <-- ТОВА Е НОВОТО ПОЛЕ
+
     [Required]
+    [Display(Name = "Driving Style")]
     public DrivingStyle DrivingStyle { get; set; }
 
     [ForeignKey(nameof(UserId))]

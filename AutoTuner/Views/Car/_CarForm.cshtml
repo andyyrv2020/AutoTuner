@@ -1,4 +1,4 @@
-@model AutoTuner.Models.Car
+﻿@model AutoTuner.Models.Car
 
 <div class="row g-3">
     <div class="col-md-6">
@@ -6,44 +6,61 @@
         <input asp-for="Brand" class="form-control" />
         <span asp-validation-for="Brand" class="text-danger"></span>
     </div>
+
     <div class="col-md-6">
         <label asp-for="Model" class="form-label"></label>
         <input asp-for="Model" class="form-control" />
         <span asp-validation-for="Model" class="text-danger"></span>
     </div>
+
     <div class="col-md-4">
         <label asp-for="Year" class="form-label"></label>
         <input asp-for="Year" class="form-control" />
         <span asp-validation-for="Year" class="text-danger"></span>
     </div>
+
     <div class="col-md-4">
         <label asp-for="EngineType" class="form-label"></label>
         <input asp-for="EngineType" class="form-control" />
         <span asp-validation-for="EngineType" class="text-danger"></span>
     </div>
+
     <div class="col-md-4">
         <label asp-for="Drivetrain" class="form-label"></label>
         <input asp-for="Drivetrain" class="form-control" />
         <span asp-validation-for="Drivetrain" class="text-danger"></span>
     </div>
+
     <div class="col-md-4">
         <label asp-for="HorsePower" class="form-label"></label>
         <input asp-for="HorsePower" class="form-control" />
         <span asp-validation-for="HorsePower" class="text-danger"></span>
     </div>
+
     <div class="col-md-4">
         <label asp-for="Torque" class="form-label"></label>
         <input asp-for="Torque" class="form-control" />
         <span asp-validation-for="Torque" class="text-danger"></span>
     </div>
+
     <div class="col-md-4">
         <label asp-for="Weight" class="form-label"></label>
         <input asp-for="Weight" class="form-control" />
         <span asp-validation-for="Weight" class="text-danger"></span>
     </div>
+
+    <!-- ✅ NEW FIELD -->
+    <div class="col-md-4">
+        <label asp-for="ZeroToHundred" class="form-label">0–100 km/h (секунди)</label>
+        <input asp-for="ZeroToHundred" class="form-control" />
+        <span asp-validation-for="ZeroToHundred" class="text-danger"></span>
+    </div>
+
     <div class="col-md-6">
         <label asp-for="DrivingStyle" class="form-label"></label>
-        <select asp-for="DrivingStyle" class="form-select" asp-items="Html.GetEnumSelectList<AutoTuner.Models.DrivingStyle>()"></select>
+        <select asp-for="DrivingStyle"
+                class="form-select"
+                asp-items="Html.GetEnumSelectList<AutoTuner.Models.DrivingStyle>()"></select>
         <span asp-validation-for="DrivingStyle" class="text-danger"></span>
     </div>
 </div>
