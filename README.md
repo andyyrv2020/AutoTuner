@@ -62,6 +62,3 @@ dotnet run
 - Mobile/PWA version  
 - Advanced AI tuning suggestions  
 - Workshop map integration
-
-## License
-MIT License
