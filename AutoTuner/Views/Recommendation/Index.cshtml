@@ -108,7 +108,7 @@ else
                         <li><i class="fa-solid fa-flag-checkered"></i> Focus: <strong>@GoalLabel(Model.Result.Goal)</strong></li>
                         <li>
                             <i class="fa-solid fa-wallet"></i> Budget:
-                            <strong>@(Model.Result.Budget.HasValue ? Model.Result.Budget.Value.ToString("C") : "Not set")</strong>
+                            <strong>@(Model.Result.Budget.HasValue? Model.Result.Budget.Value.ToString("C") : "Not set")</strong>
                             @if (Model.Result.BudgetUsagePercent.HasValue)
                             {
                                 <span class="badge @(Model.Result.BudgetExceeded ? "bg-danger" : "bg-success") ms-1">@Model.Result.BudgetUsagePercent.Value.ToString("F1")%</span>
@@ -147,44 +147,6 @@ else
             </div>
         </div>
     </div>
-
-    <div class="row g-4 mt-1">
-        <div class="col-12 col-xl-7">
-            <div class="card shadow-sm border-0 h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Cost distribution</h5>
-                    <p class="text-muted small">See how the spend breaks down across tuning categories.</p>
-                    <div class="chart-wrapper">
-                        <canvas id="costChart" height="220"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-12 col-xl-5">
-            <div class="card shadow-sm border-0 h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Strategy insights</h5>
-                    <div class="row row-cols-1 g-3">
-                        @foreach (var insight in Model.Result.Insights)
-                        {
-                            <div class="col">
-                                <div class="insight-tile h-100">
-                                    <div class="insight-icon">
-                                        <i class="fa-solid @(insight.Icon ?? "fa-circle-info")"></i>
-                                    </div>
-                                    <div>
-                                        <h6 class="mb-1">@insight.Title</h6>
-                                        <p class="mb-0 small text-muted">@insight.Description</p>
-                                    </div>
-                                </div>
-                            </div>
-                        }
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <div class="card shadow-sm border-0 mt-4">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
