@@ -1,0 +1,302 @@
+@using System.Linq
+@using System.Text.Json
+@using AutoTuner.Models
+@model AutoTuner.ViewModels.RecommendationPageViewModel
+@{
+    ViewData["Title"] = "AI Recommendations";
+
+    string GoalLabel(OptimizationGoal goal) => goal switch
+    {
+        OptimizationGoal.MaxPower => "Maximum power",
+        OptimizationGoal.MaxEfficiency => "Maximum efficiency",
+        OptimizationGoal.BudgetFocused => "Budget focused",
+        _ => "Balanced build"
+    };
+}
+
+<div class="d-flex flex-wrap flex-md-nowrap align-items-center justify-content-between gap-3 mb-4">
+    <div>
+        <h2 class="mb-0">AI Recommendations</h2>
+        <p class="text-muted mb-0">Craft a strategy that fits your build goals, budget, and safety preferences.</p>
+    </div>
+    @if (Model.SelectedCarId.HasValue)
+    {
+        <form asp-action="Generate" method="post" class="d-inline">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="carId" value="@Model.SelectedCarId" />
+            <input type="hidden" name="Options.Goal" value="@Model.Options.Goal" />
+            <input type="hidden" name="Options.Budget" value="@Model.Options.Budget" />
+            <input type="hidden" name="Options.IncludeSafetyParts" value="@Model.Options.IncludeSafetyParts" />
+            <button type="submit" class="btn btn-primary">
+                <i class="fa-solid fa-rotate"></i>
+                Recompute plan
+            </button>
+        </form>
+    }
+</div>
+
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+        <form asp-action="Index" method="get" class="row gy-3 gx-3 align-items-end">
+            <div class="col-lg-4">
+                <label class="form-label" for="carId">Select car</label>
+                <select id="carId" name="carId" class="form-select">
+                    <option value="">Choose...</option>
+                    @foreach (var car in Model.Cars)
+                    {
+                        <option value="@car.Id" selected="@(Model.SelectedCarId == car.Id ? "selected" : null)">@car.Brand @car.Model (@car.Year)</option>
+                    }
+                </select>
+            </div>
+            <div class="col-lg-3">
+                <label asp-for="Options.Goal" class="form-label">Strategy focus</label>
+                <select asp-for="Options.Goal" class="form-select" asp-items="Model.Goals"></select>
+            </div>
+            <div class="col-lg-3">
+                <label asp-for="Options.Budget" class="form-label">Budget ceiling (optional)</label>
+                <input asp-for="Options.Budget" class="form-control" type="number" min="0" step="100" placeholder="2500" />
+                <span asp-validation-for="Options.Budget" class="text-danger"></span>
+            </div>
+            <div class="col-lg-2">
+                <div class="form-check form-switch mt-2 pt-2">
+                    <input class="form-check-input" asp-for="Options.IncludeSafetyParts" />
+                    <label class="form-check-label" asp-for="Options.IncludeSafetyParts">Include safety upgrades</label>
+                </div>
+            </div>
+            <div class="col-12 d-flex justify-content-end">
+                <button type="submit" class="btn btn-outline-light px-4">
+                    <i class="fa-solid fa-sliders"></i>
+                    Apply strategy
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@if (Model.Result is null)
+{
+    <div class="alert alert-info shadow-sm">Select a car and strategy to generate personalized tuning recommendations.</div>
+}
+else
+{
+    <div class="row g-4">
+        <div class="col-xl-4">
+            <div class="card shadow-sm h-100 border-0 strategy-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <h5 class="card-title mb-3">Performance snapshot</h5>
+                        <span class="badge bg-primary-subtle text-primary-emphasis">@GoalLabel(Model.Result.Goal)</span>
+                    </div>
+                    <dl class="row mb-0 small text-uppercase text-muted">
+                        <dt class="col-6">Power</dt>
+                        <dd class="col-6 text-end fw-semibold">@Model.Result.Car.HorsePower hp → @Model.Result.PredictedPower hp</dd>
+                        <dt class="col-6">Torque</dt>
+                        <dd class="col-6 text-end fw-semibold">@Model.Result.Car.Torque Nm → @Model.Result.PredictedTorque Nm</dd>
+                        <dt class="col-6">Avg. efficiency</dt>
+                        <dd class="col-6 text-end fw-semibold">@Model.Result.AverageEfficiencyImpact %</dd>
+                        <dt class="col-6">Investment</dt>
+                        <dd class="col-6 text-end fw-semibold">@Model.Result.TotalCost.ToString("C")</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4">
+            <div class="card shadow-sm h-100 border-0">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Strategy details</h5>
+                    <ul class="list-unstyled strategy-meta mb-0">
+                        <li><i class="fa-solid fa-flag-checkered"></i> Focus: <strong>@GoalLabel(Model.Result.Goal)</strong></li>
+                        <li>
+                            <i class="fa-solid fa-wallet"></i> Budget:
+                            <strong>@(Model.Result.Budget.HasValue ? Model.Result.Budget.Value.ToString("C") : "Not set")</strong>
+                            @if (Model.Result.BudgetUsagePercent.HasValue)
+                            {
+                                <span class="badge @(Model.Result.BudgetExceeded ? "bg-danger" : "bg-success") ms-1">@Model.Result.BudgetUsagePercent.Value.ToString("F1")%</span>
+                            }
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-shield"></i>
+                            Safety upgrades:
+                            <strong>@(Model.Result.SafetyPartsIncluded ? "Included" : "Excluded")</strong>
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-gear"></i>
+                            Total gains: <strong>+@Model.Result.TotalPowerGain hp / +@Model.Result.TotalTorqueGain Nm</strong>
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-scale-balanced"></i>
+                            Cost efficiency: <strong>@(Model.Result.CostPerHorsepower > 0 ? Model.Result.CostPerHorsepower.ToString("C") : "–") per hp</strong>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4">
+            <div class="card shadow-sm h-100 border-0">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Power-to-weight</h5>
+                    <ul class="list-unstyled metrics-list mb-3">
+                        <li><span>Before</span><strong>@Model.Result.PowerToWeightBefore:F1 hp/t</strong></li>
+                        <li><span>After</span><strong>@Model.Result.PowerToWeightAfter:F1 hp/t</strong></li>
+                        <li><span>0-100 km/h</span><strong>@Model.Result.EstimatedZeroToHundredBefore:F1s → @Model.Result.EstimatedZeroToHundredAfter:F1s</strong></li>
+                    </ul>
+                    <div class="chart-wrapper">
+                        <canvas id="performanceChart" height="160"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mt-1">
+        <div class="col-12 col-xl-7">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Cost distribution</h5>
+                    <p class="text-muted small">See how the spend breaks down across tuning categories.</p>
+                    <div class="chart-wrapper">
+                        <canvas id="costChart" height="220"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-xl-5">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Strategy insights</h5>
+                    <div class="row row-cols-1 g-3">
+                        @foreach (var insight in Model.Result.Insights)
+                        {
+                            <div class="col">
+                                <div class="insight-tile h-100">
+                                    <div class="insight-icon">
+                                        <i class="fa-solid @(insight.Icon ?? "fa-circle-info")"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-1">@insight.Title</h6>
+                                        <p class="mb-0 small text-muted">@insight.Description</p>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 mt-4">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                <h5 class="card-title mb-0">Recommended parts</h5>
+                <span class="badge bg-secondary-subtle text-secondary-emphasis">@Model.Result.Parts.Count item(s)</span>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-dark table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th scope="col">Part</th>
+                            <th scope="col">Category</th>
+                            <th scope="col" class="text-center">Power</th>
+                            <th scope="col" class="text-center">Torque</th>
+                            <th scope="col" class="text-center">Efficiency</th>
+                            <th scope="col" class="text-center">Safety</th>
+                            <th scope="col" class="text-end">Cost</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var part in Model.Result.Parts)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@part.Name</strong>
+                                    <div class="text-muted small">@part.Description</div>
+                                </td>
+                                <td>@part.Category</td>
+                                <td class="text-center">+@part.PowerGain hp</td>
+                                <td class="text-center">+@part.TorqueGain Nm</td>
+                                <td class="text-center">@part.EfficiencyImpact %</td>
+                                <td class="text-center">
+                                    @if (part.IsSafetyCritical)
+                                    {
+                                        <span class="badge bg-warning text-dark">Safety</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">—</span>
+                                    }
+                                </td>
+                                <td class="text-end">@part.Cost.ToString("C")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    @section Scripts {
+        <script>
+            const performanceChart = document.getElementById('performanceChart');
+            if (performanceChart) {
+                new Chart(performanceChart, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Horsepower', 'Torque'],
+                        datasets: [
+                            {
+                                label: 'Before',
+                                backgroundColor: '#6c757d',
+                                borderRadius: 6,
+                                data: [@Model.Result.Car.HorsePower, @Model.Result.Car.Torque]
+                            },
+                            {
+                                label: 'After',
+                                backgroundColor: '#0d6efd',
+                                borderRadius: 6,
+                                data: [@Model.Result.PredictedPower, @Model.Result.PredictedTorque]
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'bottom'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+
+            const costChart = document.getElementById('costChart');
+            const costData = @Html.Raw(JsonSerializer.Serialize(Model.Result.CostByCategory.Select(kvp => new { category = kvp.Key, value = kvp.Value })));
+            if (costChart && costData.length) {
+                new Chart(costChart, {
+                    type: 'doughnut',
+                    data: {
+                        labels: costData.map(item => item.category),
+                        datasets: [{
+                            data: costData.map(item => item.value),
+                            backgroundColor: ['#0d6efd', '#6610f2', '#6f42c1', '#d63384', '#fd7e14', '#198754', '#20c997'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
+        </script>
+    }
+}

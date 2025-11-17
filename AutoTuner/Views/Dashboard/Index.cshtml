@@ -1,0 +1,226 @@
+@model AutoTuner.ViewModels.DashboardViewModel
+@{
+    ViewData["Title"] = "Performance Dashboard";
+    var costLabels = System.Text.Json.JsonSerializer.Serialize(Model.CostByCategory.Keys);
+    var costValues = System.Text.Json.JsonSerializer.Serialize(Model.CostByCategory.Values);
+    var efficiencyLabels = System.Text.Json.JsonSerializer.Serialize(Model.EfficiencyByCategory.Keys);
+    var efficiencyValues = System.Text.Json.JsonSerializer.Serialize(Model.EfficiencyByCategory.Values);
+    var history = Model.PerformanceHistory.OrderBy(h => h.DateApplied).ToList();
+    var historyLabels = System.Text.Json.JsonSerializer.Serialize(history.Select(h => h.DateApplied.ToString("yyyy-MM-dd")));
+    var historyPower = System.Text.Json.JsonSerializer.Serialize(history.Select(h => h.NewPower));
+    var historyTorque = System.Text.Json.JsonSerializer.Serialize(history.Select(h => h.NewTorque));
+}
+
+<h2 class="mb-3">Performance dashboard</h2>
+@if (!Model.Cars.Any())
+{
+    <div class="alert alert-info">Add a car to view personalized analytics.</div>
+}
+else
+{
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card shadow-sm glass-card">
+                <div class="card-body">
+                    <h6 class="text-muted">Cars</h6>
+                    <p class="display-6 mb-0">@Model.Cars.Count</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm glass-card">
+                <div class="card-body">
+                    <h6 class="text-muted">Recommendations</h6>
+                    <p class="display-6 mb-0">@Model.Recommendations.Select(r => r.CarId).Distinct().Count()</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm glass-card">
+                <div class="card-body">
+                    <h6 class="text-muted">Invested budget</h6>
+                    <p class="display-6 mb-0">@Model.TotalBudget.ToString("C")</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm glass-card">
+                <div class="card-body">
+                    <h6 class="text-muted">Avg efficiency</h6>
+                    <p class="display-6 mb-0">@Model.AverageEfficiency.ToString("F1")%</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <div class="card shadow-sm h-100 glass-card">
+                <div class="card-body">
+                    <h5 class="card-title">Cost by category</h5>
+                    <canvas id="costChart" height="220"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card shadow-sm h-100 glass-card">
+                <div class="card-body">
+                    <h5 class="card-title">Efficiency by category</h5>
+                    <canvas id="efficiencyChart" height="220"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mt-4 glass-card">
+        <div class="card-body">
+            <h5 class="card-title">Performance history</h5>
+            @if (!Model.PerformanceHistory.Any())
+            {
+                <p class="text-muted mb-0">No performance history recorded yet.</p>
+            }
+            else
+            {
+                <div class="row g-4 mb-4">
+                    <div class="col-lg-7">
+                        <canvas id="historyChart" height="240"></canvas>
+                    </div>
+                    <div class="col-lg-5">
+                        <div class="d-flex flex-column gap-3">
+                            <div class="stat-tile">
+                                <div class="stat-label">Latest power</div>
+                                <div class="stat-value">@Model.PerformanceHistory.OrderByDescending(h => h.DateApplied).First().NewPower hp</div>
+                                <div class="stat-sub">from @Model.PerformanceHistory.OrderByDescending(h => h.DateApplied).First().OldPower hp</div>
+                            </div>
+                            <div class="stat-tile">
+                                <div class="stat-label">Latest torque</div>
+                                <div class="stat-value">@Model.PerformanceHistory.OrderByDescending(h => h.DateApplied).First().NewTorque Nm</div>
+                                <div class="stat-sub">from @Model.PerformanceHistory.OrderByDescending(h => h.DateApplied).First().OldTorque Nm</div>
+                            </div>
+                            <div class="stat-tile">
+                                <div class="stat-label">Entries recorded</div>
+                                <div class="stat-value">@Model.PerformanceHistory.Count</div>
+                                <div class="stat-sub">including seeded upgrades</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Car</th>
+                                <th>Date</th>
+                                <th>Power</th>
+                                <th>Torque</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var entry in Model.PerformanceHistory)
+                        {
+                            var car = Model.Cars.FirstOrDefault(c => c.Id == entry.CarId);
+                            <tr>
+                                <td>@car?.Brand @car?.Model</td>
+                                <td>@entry.DateApplied.ToString("dd MMM yyyy")</td>
+                                <td>@entry.OldPower hp → @entry.NewPower hp</td>
+                                <td>@entry.OldTorque Nm → @entry.NewTorque Nm</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+
+    @section Scripts {
+        <script>
+            const costCtx = document.getElementById('costChart');
+            if (costCtx) {
+                new Chart(costCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: @Html.Raw(costLabels),
+                        datasets: [{
+                            data: @Html.Raw(costValues),
+                            backgroundColor: ['#0d6efd', '#6610f2', '#6f42c1', '#198754', '#fd7e14', '#dc3545']
+                        }]
+                    }
+                });
+            }
+
+            const efficiencyCtx = document.getElementById('efficiencyChart');
+            if (efficiencyCtx) {
+                new Chart(efficiencyCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: @Html.Raw(efficiencyLabels),
+                        datasets: [{
+                            data: @Html.Raw(efficiencyValues),
+                            backgroundColor: '#20c997'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+
+            const historyCtx = document.getElementById('historyChart');
+            if (historyCtx && @history.Count > 0) {
+                new Chart(historyCtx, {
+                    type: 'line',
+                    data: {
+                        labels: @Html.Raw(historyLabels),
+                        datasets: [
+                            {
+                                label: 'Power (hp)',
+                                data: @Html.Raw(historyPower),
+                                borderColor: '#ff4d6d',
+                                backgroundColor: 'rgba(255, 77, 109, 0.12)',
+                                tension: 0.3,
+                                fill: true,
+                                pointRadius: 4
+                            },
+                            {
+                                label: 'Torque (Nm)',
+                                data: @Html.Raw(historyTorque),
+                                borderColor: '#4dd4ac',
+                                backgroundColor: 'rgba(77, 212, 172, 0.12)',
+                                tension: 0.3,
+                                fill: true,
+                                pointRadius: 4
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top'
+                            }
+                        },
+                        scales: {
+                            x: {
+                                ticks: {
+                                    color: '#a8b2c7'
+                                }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    color: '#a8b2c7'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        </script>
+    }
+}

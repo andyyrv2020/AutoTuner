@@ -1,0 +1,13 @@
+@model AutoTuner.Models.Car
+@{
+    ViewData["Title"] = "Delete Car";
+}
+
+<h2>Delete car</h2>
+<p class="text-danger">Are you sure you want to delete @Model.Brand @Model.Model (@Model.Year)?</p>
+<form asp-action="Delete" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
