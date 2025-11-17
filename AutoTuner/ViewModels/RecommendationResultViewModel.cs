@@ -24,6 +24,8 @@ public class RecommendationResultViewModel
     public double EstimatedZeroToHundredBefore { get; set; }
     public double EstimatedZeroToHundredAfter { get; set; }
     public decimal CostPerHorsepower { get; set; }
+    public Dictionary<string, double> EfficiencyByCategory { get; set; } = new();
+
     public decimal CostPerTorque { get; set; }
     public int TotalPowerGain { get; set; }
     public int TotalTorqueGain { get; set; }

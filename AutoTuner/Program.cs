@@ -22,7 +22,8 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 
 builder.Services.AddScoped<IRecommendationService, RecommendationService>();
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
+
 builder.Services.AddRazorPages();
 
 builder.Services.AddHangfire(configuration =>

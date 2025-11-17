@@ -18,21 +18,26 @@ public class TuningPart
     public string? Description { get; set; }
 
     [Range(0, 1000)]
+    [Display(Name = "Power Gain")]
     public int PowerGain { get; set; }
 
     [Range(0, 1000)]
+    [Display(Name = "Torque Gain")]
     public int TorqueGain { get; set; }
 
     [Range(-100, 100)]
+    [Display(Name = "Efficiency Impact")]
     public double EfficiencyImpact { get; set; }
 
     [Range(0, 100000)]
     public decimal Cost { get; set; }
 
     [Required]
+    [Display(Name = "Recommended For Style")]
+
     public DrivingStyle RecommendedForStyle { get; set; }
 
-    [Display(Name = "Safety critical")]
+    [Display(Name = "Safety critical?")]
     public bool IsSafetyCritical { get; set; }
 
     public ICollection<Recommendation> Recommendations { get; set; } = new List<Recommendation>();
