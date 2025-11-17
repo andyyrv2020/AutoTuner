@@ -654,3 +654,42 @@ body.theme-light .form-select {
   font-size: 1rem;
   letter-spacing: 0.02em;
 }
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(14px);
+}
+
+.theme-light .glass-card {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(0, 0, 0, 0.05);
+  box-shadow: 0 12px 35px rgba(14, 30, 62, 0.08);
+}
+
+.theme-dark .glass-card {
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4);
+}
+
+.stat-tile {
+  border-radius: 1rem;
+  padding: 1rem 1.25rem;
+  background: linear-gradient(135deg, rgba(255, 77, 109, 0.12), rgba(77, 212, 172, 0.12));
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  color: var(--color-muted);
+  text-transform: uppercase;
+}
+
+.stat-value {
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.stat-sub {
+  color: var(--color-muted);
+}

@@ -46,6 +46,8 @@ public class RecommendationService : IRecommendationService
         var averageEfficiency = selectedParts.Any() ? selectedParts.Average(p => p.EfficiencyImpact) : 0;
         var totalCost = selectedParts.Sum(p => p.Cost);
 
+        await PersistPerformanceSnapshotAsync(car, predictedPower, predictedTorque);
+
         var existing = await _context.Recommendations
             .Where(r => r.CarId == carId
                         && r.Goal == options.Goal
@@ -316,6 +318,36 @@ public class RecommendationService : IRecommendationService
 
         result.Insights = BuildInsights(result, forcedSafetyInclusion);
         return result;
+    }
+
+    private async Task PersistPerformanceSnapshotAsync(Car car, int predictedPower, int predictedTorque)
+    {
+        var latestEntry = await _context.PerformanceHistories
+            .Where(h => h.CarId == car.Id)
+            .OrderByDescending(h => h.DateApplied)
+            .FirstOrDefaultAsync();
+
+        var hasChanged = latestEntry is null
+            || latestEntry.NewPower != predictedPower
+            || latestEntry.NewTorque != predictedTorque;
+
+        if (!hasChanged)
+        {
+            return;
+        }
+
+        var snapshot = new PerformanceHistory
+        {
+            CarId = car.Id,
+            OldPower = latestEntry?.NewPower ?? car.HorsePower,
+            NewPower = predictedPower,
+            OldTorque = latestEntry?.NewTorque ?? car.Torque,
+            NewTorque = predictedTorque,
+            DateApplied = DateTime.UtcNow
+        };
+
+        _context.PerformanceHistories.Add(snapshot);
+        await _context.SaveChangesAsync();
     }
 
     private static List<StrategyInsightViewModel> BuildInsights(RecommendationResultViewModel result, bool forcedSafetyInclusion)
